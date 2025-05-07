@@ -3,41 +3,41 @@ def solution(friends, gifts):
     # 1대1 비교 더 많이 선물 준사람이 다음달에 1개 받음
     # 선물지수가 더 큰사람이 선물지수가 더 적은 사람한테 하나 받음
     # 선물지수도 같으면 서로 0
-    '''
+    """
     선물지수 : 준선물 - 받은 선물
-    
+
     가장 많이 선물을 받을 친구가 선물을 받을 수를 알고 싶음
-    '''
-    
+    """
+
     # 2차원 배열로 풀기?
     # 1. 서로 선물을 주고 받은 전적이 있는지 알아야됨
     # 2. 개별 사람의 선물 지수를 구해야함
-    
-    '''
+
+    """
     2차원 배열로 하자
-    '''
+    """
     n_friends = len(friends)
-    
+
     trade_list = [[0 for _ in range(n_friends)] for _ in range(n_friends)]
-    name_match = {} 
-    
+    name_match = {}
+
     for i in range(n_friends):
         name_match[friends[i]] = i
-    
+
     # 2차원 배열로 주고 받은 수 표기, [준사람][받은사람]
     for trade in gifts:
-        give, got=trade.split(' ')
+        give, got = trade.split(" ")
         trade_list[name_match[give]][name_match[got]] += 1
-    
-    #선물지수 구하기
+
+    # 선물지수 구하기
     gift_factors = {}
     for i in range(n_friends):
         give_factor = sum(trade_list[i])
         got_factor = 0
         for j in range(n_friends):
             got_factor += trade_list[j][i]
-        gift_factors[friends[i]] = give_factor - got_factor  
-    
+        gift_factors[friends[i]] = give_factor - got_factor
+
     # 받을 선물 구하기
     max_next_gift = 0
     for i in range(n_friends):
@@ -45,15 +45,14 @@ def solution(friends, gifts):
         for j in range(n_friends):
             if i == j:
                 continue
-        
+
             if (trade_list[i][j] - trade_list[j][i]) == 0:
                 if gift_factors[friends[i]] > gift_factors[friends[j]]:
                     next_gift += 1
             elif trade_list[i][j] > trade_list[j][i]:
                 next_gift += 1
-        
+
         max_next_gift = max(max_next_gift, next_gift)
-        
-    
+
     answer = max_next_gift
     return answer

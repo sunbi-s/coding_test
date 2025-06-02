@@ -29,3 +29,4 @@ class Solution:
             x //= 10
 
         return x == reversed_half or x == reversed_half // 10
+    

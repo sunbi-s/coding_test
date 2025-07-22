@@ -1,0 +1,75 @@
+import sys
+from collections import deque
+
+# 입력
+N, M = map(int, sys.stdin.readline().split())
+board = [list(sys.stdin.readline().strip()) for _ in range(N)]
+
+# 방향: 상, 하, 좌, 우
+dx = [-1, 1, 0, 0]
+dy = [0, 0, -1, 1]
+
+# 빨간/파란 구슬 위치 저장
+for i in range(N):
+    for j in range(M):
+        if board[i][j] == 'R':
+            red_start = (i, j)
+        elif board[i][j] == 'B':
+            blue_start = (i, j)
+
+# 구슬을 굴리는 함수
+def move(x, y, dx, dy):
+    cnt = 0
+    while True:
+        if board[x + dx][y + dy] == '#':
+            break
+        x += dx
+        y += dy
+        cnt += 1
+        if board[x][y] == 'O':  # ✅ 알파벳 O
+            break
+    return x, y, cnt
+
+# BFS 탐색
+def bfs():
+    visited = set()
+    rx, ry = red_start
+    bx, by = blue_start
+    queue = deque()
+    queue.append((rx, ry, bx, by, 0))
+    visited.add((rx, ry, bx, by))
+
+    while queue:
+        rx, ry, bx, by, depth = queue.popleft()
+        if depth >= 10:
+            return -1
+
+        for i in range(4):
+            nrx, nry, rc = move(rx, ry, dx[i], dy[i])
+            nbx, nby, bc = move(bx, by, dx[i], dy[i])
+
+            # 파란 구슬이 구멍에 빠지면 실패
+            if board[nbx][nby] == 'O':
+                continue
+
+            # 빨간 구슬만 구멍에 빠지면 성공
+            if board[nrx][nry] == 'O':
+                return depth + 1
+
+            # 겹쳤을 때 사후 조정
+            if (nrx, nry) == (nbx, nby):
+                if rc > bc:
+                    nrx -= dx[i]
+                    nry -= dy[i]
+                else:
+                    nbx -= dx[i]
+                    nby -= dy[i]
+
+            if (nrx, nry, nbx, nby) not in visited:
+                visited.add((nrx, nry, nbx, nby))
+                queue.append((nrx, nry, nbx, nby, depth + 1))
+
+    return -1
+
+# 출력
+print(bfs())
